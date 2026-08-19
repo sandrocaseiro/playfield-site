@@ -1,0 +1,245 @@
+---
+import Base from "../layouts/Base.astro";
+import { getReleases, getLatest, formatBytes, formatDate } from "../lib/releases";
+
+const base = import.meta.env.BASE_URL;
+const releases = await getReleases();
+const latest = await getLatest();
+const older = releases.filter((r) => r.tag !== latest?.tag).slice(0, 8);
+
+const describe: Record<string, string> = {
+  installer: "Installer — the one to take if you are unsure",
+  msi: "MSI package — for deploying without the installer's prompts",
+  checksums: "Checksums for everything above",
+  other: "",
+};
+---
+
+<Base
+  title="Download Playfield"
+  description="Playfield for Windows — installer, MSI package and checksums, with what to expect the first time you run it."
+>
+  <section class="head">
+    <div class="page">
+      <p class="eyebrow">Windows 10 and 11, 64-bit</p>
+      <h1>Download</h1>
+      {
+        latest ? (
+          <p class="lede">
+            Version {latest.version}, released {formatDate(latest.date)}.
+            {latest.headline ? ` ${latest.headline}.` : ""}
+          </p>
+        ) : (
+          <p class="lede">
+            There is no release yet. When there is, it appears here and on the
+            {" "}<a href={`${base}changelog/`}>changelog</a>.
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    latest && (
+      <section class="page files">
+        {latest.assets.map((asset) => (
+          <a class="file" href={asset.url} download>
+            <span class="file__name">{asset.name}</span>
+            <span class="file__what">{describe[asset.kind]}</span>
+            <span class="file__size">{formatBytes(asset.size)}</span>
+          </a>
+        ))}
+      </section>
+    )
+  }
+
+  <section class="page notes">
+    <div class="note">
+      <h2>Windows will not recognise it</h2>
+      <p>
+        Playfield is not code-signed, so SmartScreen calls it an unrecognised app the first
+        time you run the installer. Choose <em>More info</em>, then <em>Run anyway</em>. If
+        you would rather check first, every release publishes
+        {" "}<code>SHA256SUMS.txt</code> — compare it with
+        {" "}<code>Get-FileHash .\Playfield_setup.exe</code> in PowerShell.
+      </p>
+    </div>
+    <div class="note">
+      <h2>Nothing to sign in to</h2>
+      <p>
+        On first run Playfield looks for the launchers already installed on this machine and
+        reads what they know. There is no Playfield account, and there never will be. A store
+        that cannot be read without one says so on its own page in Settings.
+      </p>
+    </div>
+    <div class="note">
+      <h2>Windows only, for now</h2>
+      <p>
+        The library, the matching and the database are platform-free and are compiled and
+        tested on Linux and macOS on every change. Neither has ever launched a game, so
+        neither gets a build here yet.
+      </p>
+    </div>
+    <div class="note">
+      <h2>It will not update itself</h2>
+      <p>
+        There is no updater. New versions appear on this page, and the
+        {" "}<a href={`${base}changelog/`}>changelog</a> says what changed in each.
+      </p>
+    </div>
+  </section>
+
+  {
+    older.length > 0 && (
+      <section class="page older">
+        <h2>Earlier releases</h2>
+        <ul>
+          {older.map((release) => (
+            <li>
+              <a href={release.url}>
+                <span class="older__version">{release.version}</span>
+                <span class="older__date">{formatDate(release.date)}</span>
+                {release.prerelease && <span class="older__tag">pre-release</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .head {
+    padding-block: var(--s-16) var(--s-8);
+  }
+
+  .head h1 {
+    font-size: var(--text-3xl);
+    margin-top: var(--s-3);
+  }
+
+  .head .lede {
+    margin-top: var(--s-4);
+    max-width: 44rem;
+  }
+
+  .files {
+    display: grid;
+    gap: var(--s-2);
+    margin-block: var(--s-8);
+  }
+
+  .file {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr) auto;
+    gap: var(--s-4);
+    align-items: baseline;
+    padding: var(--s-4) var(--s-6);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    background: var(--slate);
+    text-decoration: none;
+    transition: border-color 160ms ease, background-color 160ms ease;
+  }
+
+  .file:hover {
+    border-color: var(--brass-dim);
+    background: var(--slate-hi);
+  }
+
+  .file__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--brass);
+    overflow-wrap: anywhere;
+  }
+
+  .file__what {
+    font-size: var(--text-sm);
+    color: var(--faint);
+  }
+
+  .file__size {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--s-8);
+    margin-block: var(--s-16);
+  }
+
+  .note h2 {
+    font-size: var(--text-xl);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--brass-dim);
+  }
+
+  .note p {
+    margin-top: var(--s-3);
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+
+  .note code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--bone);
+    overflow-wrap: anywhere;
+  }
+
+  .older {
+    padding-block: var(--s-8) var(--s-16);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .older h2 {
+    font-size: var(--text-xl);
+  }
+
+  .older ul {
+    list-style: none;
+    padding: 0;
+    margin: var(--s-6) 0 0;
+  }
+
+  .older a {
+    display: flex;
+    gap: var(--s-6);
+    align-items: baseline;
+    padding-block: var(--s-3);
+    border-top: 1px solid var(--hairline);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .older a:hover .older__version {
+    color: var(--brass);
+  }
+
+  .older__version {
+    color: var(--bone);
+    min-width: 5rem;
+  }
+
+  .older__tag {
+    color: var(--warn);
+  }
+
+  @media (max-width: 46rem) {
+    .file {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .file__what {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

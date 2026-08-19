@@ -1,0 +1,117 @@
+---
+// Six 2:3 covers on a circle, each lapping the next and cut by it. The
+// application's mark, unchanged.
+//
+// The masks resolve in user space, so a transform on any wrapper would move
+// the cutters and the blades would erase each other. Nothing here rotates a
+// blade: the settle is opacity per blade and one transform on the <svg>, which
+// the masks never see.
+interface Props {
+  size?: number;
+  settle?: boolean;
+  class?: string;
+}
+const { size = 48, settle = false, class: className = "" } = Astro.props;
+---
+
+<svg
+  class:list={["mark", { "mark--settle": settle }, className]}
+  viewBox="50 50 412 412"
+  width={size}
+  height={size}
+  role="img"
+  aria-label="Playfield"
+>
+  <defs>
+    <linearGradient id="ma" x1=".05" y1="0" x2=".95" y2="1"
+      ><stop offset="0" stop-color="#f7d49c"></stop><stop offset="1" stop-color="#e0a458"
+      ></stop></linearGradient
+    >
+    <linearGradient id="mb" x1=".05" y1="0" x2=".95" y2="1"
+      ><stop offset="0" stop-color="#e0a458"></stop><stop offset="1" stop-color="#b07c38"
+      ></stop></linearGradient
+    >
+    <linearGradient id="mc" x1=".05" y1="0" x2=".95" y2="1"
+      ><stop offset="0" stop-color="#b07c38"></stop><stop offset="1" stop-color="#74531f"
+      ></stop></linearGradient
+    >
+    <linearGradient id="md" x1=".05" y1="0" x2=".95" y2="1"
+      ><stop offset="0" stop-color="#e0a458"></stop><stop offset="1" stop-color="#74531f"
+      ></stop></linearGradient
+    >
+    {
+      [60, 120, 180, 240, 300, 0].map((angle, i) => (
+        <mask id={`mm${i}`} maskUnits="userSpaceOnUse" x="-40" y="-40" width="592" height="592">
+          <rect x="-40" y="-40" width="592" height="592" fill="#fff" />
+          <rect
+            x="169"
+            y="55"
+            width="174"
+            height="122"
+            rx="22"
+            transform={`rotate(${angle} 256 256)`}
+            fill="#000"
+          />
+        </mask>
+      ))
+    }
+  </defs>
+  {
+    [
+      { angle: 0, fill: "ma" },
+      { angle: 60, fill: "mb" },
+      { angle: 120, fill: "mc" },
+      { angle: 180, fill: "md" },
+      { angle: 240, fill: "mb" },
+      { angle: 300, fill: "mc" },
+    ].map((blade, i) => (
+      <g class="mark__blade" mask={`url(#mm${i})`} style={`--i:${i}`}>
+        <rect
+          x="178"
+          y="64"
+          width="156"
+          height="104"
+          rx="13"
+          transform={`rotate(${blade.angle} 256 256)`}
+          fill={`url(#${blade.fill})`}
+        />
+      </g>
+    ))
+  }
+</svg>
+
+<style>
+  .mark {
+    overflow: visible;
+  }
+
+  /* One settle on load: the six covers arrive in order and the aperture turns
+     into place. It happens once, it never loops, and it is over in less than a
+     second. */
+  .mark--settle {
+    animation: mark-turn var(--settle) var(--ease-settle) both;
+  }
+
+  .mark--settle .mark__blade {
+    animation: blade-arrive 420ms var(--ease-settle) both;
+    animation-delay: calc(var(--i) * 70ms);
+  }
+
+  @keyframes mark-turn {
+    from {
+      transform: rotate(-26deg) scale(0.94);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes blade-arrive {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>

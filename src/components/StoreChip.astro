@@ -1,0 +1,65 @@
+---
+import { STORE_ICON_PATHS } from "../lib/storeIcons";
+
+// The application's chip, at the application's two states: filled where the
+// game is installed on that store, outlined where it is only owned. The mark
+// is load-bearing rather than decorative — Steam, Battle.net and Ubisoft share
+// a hue band, so colour alone could never say which store this is.
+interface Props {
+  store: keyof typeof STORE_ICON_PATHS;
+  state?: "installed" | "owned";
+  label: string;
+  size?: number;
+}
+const { store, state = "installed", label, size = 28 } = Astro.props;
+---
+
+<span
+  class="chip"
+  data-state={state}
+  style={`--c: var(--store-${store}); --size: ${size}px`}
+  title={label}
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d={STORE_ICON_PATHS[store]} fill="currentColor"
+    ></path></svg
+  >
+  <span class="sr">{label}</span>
+</span>
+
+<style>
+  .chip {
+    width: var(--size);
+    height: var(--size);
+    border-radius: 3px;
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+
+  .chip[data-state="installed"] {
+    background: var(--c);
+    color: var(--on-accent);
+    border: 1px solid var(--c);
+  }
+
+  .chip[data-state="owned"] {
+    background: transparent;
+    color: var(--c);
+    border: 1px solid var(--c);
+    opacity: 0.8;
+  }
+
+  .chip svg {
+    width: 62%;
+    height: 62%;
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

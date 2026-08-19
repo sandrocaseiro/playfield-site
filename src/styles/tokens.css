@@ -1,0 +1,95 @@
+/* The application's own tokens, plus the ones only a website needs.
+ *
+ * Ground, accent, text and store identity are copied verbatim from
+ * src/design/tokens.css in the app repository: this page and the screenshots
+ * on it have to be the same object. The type scale is not copied — an
+ * interface tops out at 32px and a page does not.
+ */
+
+:root {
+  /* ---- ground ---- */
+  --ink: #0a0d14;
+  --slate: #141a26;
+  --slate-hi: #1d2534;
+  --hairline: #232c3d;
+
+  /* ---- accent ---- */
+  --brass: #e0a458;
+  --brass-lit: #f7d49c;
+  --brass-dim: #8a6533;
+  --brass-wash: #e0a45833;
+
+  /* ---- text ---- */
+  --bone: #e8e6e1;
+  --muted: #a8b0bd;
+  --faint: #808da3;
+  --on-accent: #06090f;
+
+  --ok: #5fbf8f;
+  --warn: #e8c23e;
+  --bad: #dc6a6a;
+
+  /* ---- store identity ----
+   * Colour alone cannot encode a store — steam, bnet and ubi sit in one hue
+   * band — so every chip on this page carries its letter too, exactly as the
+   * application's does.
+   */
+  --store-steam: #66c0f4;
+  --store-epic: #e8e8e8;
+  --store-gog: #a05fd3;
+  --store-amazon: #ff9900;
+  --store-ea: #ff4c4c;
+  --store-bnet: #148eff;
+  --store-ubi: #16a9e1;
+  --store-msft: #4bc74b;
+
+  /* ---- type ----
+   * Archivo carries the voice at display sizes; Plex Sans reads at length;
+   * Plex Mono is the utility face, and it is the one that quotes the
+   * interface — the app's own micro-labels are tracked uppercase, so the
+   * page's are too.
+   */
+  --font-display: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+
+  --text-micro: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --text-3xl: clamp(2.25rem, 1.2rem + 4vw, 3.75rem);
+  --text-display: clamp(2.75rem, 1.4rem + 5.4vw, 5.5rem);
+
+  --track-label: 0.16em;
+  --track-tight: -0.02em;
+  --track-display: -0.035em;
+
+  --measure: 34rem;
+
+  /* ---- space ---- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-24: 6rem;
+  --s-32: 8rem;
+
+  --radius: 6px;
+  --radius-lg: 12px;
+
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --page: 78rem;
+
+  /* ---- motion ----
+   * One duration and one curve. Everything on this page that moves is a
+   * settle, not a loop.
+   */
+  --settle: 620ms;
+  --ease-settle: cubic-bezier(0.16, 0.84, 0.32, 1);
+}

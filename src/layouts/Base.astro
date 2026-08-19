@@ -1,0 +1,159 @@
+---
+import "../styles/global.css";
+import Mark from "../components/Mark.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const here = Astro.url.pathname;
+const nav = [
+  { href: `${base}download/`, label: "Download" },
+  { href: `${base}changelog/`, label: "Changelog" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0a0d14" />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="page masthead__inner">
+        <a class="wordmark" href={base}>
+          <Mark size={26} />
+          <span>Playfield</span>
+        </a>
+        <nav>
+          {
+            nav.map((item) => (
+              <a href={item.href} aria-current={here.startsWith(item.href) ? "page" : undefined}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <hr class="rule" />
+      <div class="page footer__inner">
+        <p class="footer__note">
+          Playfield reads what is already on this machine. It is not affiliated with
+          Valve, Epic Games, GOG, Amazon, Electronic Arts, Blizzard, Ubisoft or Microsoft.
+        </p>
+        <p class="footer__links">
+          <a href={`${base}download/`}>Download</a>
+          <a href={`${base}changelog/`}>Changelog</a>
+          <a href="https://github.com/sandrocaseiro/playfield-site/releases">Releases</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .masthead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .masthead__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-6);
+    height: 58px;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    letter-spacing: var(--track-tight);
+  }
+
+  .masthead nav {
+    display: flex;
+    gap: var(--s-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+  }
+
+  .masthead nav a {
+    text-decoration: none;
+    color: var(--muted);
+    padding-block: var(--s-2);
+    border-bottom: 1px solid transparent;
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+
+  .masthead nav a:hover {
+    color: var(--bone);
+  }
+
+  .masthead nav a[aria-current="page"] {
+    color: var(--brass);
+    border-bottom-color: var(--brass);
+  }
+
+  .footer {
+    margin-top: var(--s-32);
+  }
+
+  .footer__inner {
+    padding-block: var(--s-8) var(--s-12);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-6);
+    justify-content: space-between;
+    align-items: start;
+  }
+
+  .footer__note {
+    font-size: var(--text-sm);
+    color: var(--faint);
+    max-width: 38rem;
+  }
+
+  .footer__links {
+    display: flex;
+    gap: var(--s-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .footer__links a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .footer__links a:hover {
+    color: var(--brass);
+  }
+</style>

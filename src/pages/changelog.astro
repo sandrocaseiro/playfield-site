@@ -1,0 +1,218 @@
+---
+import { marked } from "marked";
+import Base from "../layouts/Base.astro";
+import { getReleases, formatDate, formatBytes } from "../lib/releases";
+
+const base = import.meta.env.BASE_URL;
+const releases = await getReleases();
+
+// The release body is markdown written by the release pipeline and editable
+// only by whoever can edit a release. Rendering it is the whole point of this
+// page: correcting a release on GitHub is how this page gets corrected.
+marked.setOptions({ gfm: true, breaks: false });
+const rendered = releases.map((release) => ({
+  ...release,
+  html: marked.parse(release.body || "_No notes were written for this release._"),
+}));
+---
+
+<Base
+  title="Playfield — changelog"
+  description="Every Playfield release and what changed in it."
+>
+  <section class="head">
+    <div class="page">
+      <p class="eyebrow">Newest first</p>
+      <h1>Changelog</h1>
+      <p class="lede">
+        Every release, and what changed in it. Each one links to its files on GitHub.
+      </p>
+    </div>
+  </section>
+
+  <div class="page">
+    {
+      rendered.length === 0 ? (
+        <p class="empty">
+          There is no release yet. When there is, it appears here and on the
+          {" "}<a href={`${base}download/`}>download page</a>.
+        </p>
+      ) : (
+        rendered.map((release) => (
+          <article class="release" id={release.version}>
+            <header class="release__head">
+              <h2>
+                <a href={`#${release.version}`}>{release.version}</a>
+              </h2>
+              <p class="release__meta">
+                {formatDate(release.date)}
+                {release.prerelease && <span class="release__tag">pre-release</span>}
+              </p>
+              {release.headline && <p class="release__headline">{release.headline}</p>}
+            </header>
+
+            <div class="release__body prose" set:html={release.html} />
+
+            {release.assets.length > 0 && (
+              <ul class="release__files">
+                {release.assets.map((asset) => (
+                  <li>
+                    <a href={asset.url} download>
+                      {asset.name} <span>{formatBytes(asset.size)}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .head {
+    padding-block: var(--s-16) var(--s-8);
+  }
+
+  .head h1 {
+    font-size: var(--text-3xl);
+    margin-top: var(--s-3);
+  }
+
+  .head .lede {
+    margin-top: var(--s-4);
+  }
+
+  .empty {
+    color: var(--faint);
+    padding-block: var(--s-8) var(--s-24);
+  }
+
+  .release {
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    padding-block: var(--s-12);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .release__head h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .release__head h2 a {
+    text-decoration: none;
+  }
+
+  .release__head h2 a:hover {
+    color: var(--brass);
+  }
+
+  .release__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--faint);
+    margin-top: var(--s-2);
+    display: flex;
+    gap: var(--s-3);
+  }
+
+  .release__tag {
+    color: var(--warn);
+  }
+
+  .release__headline {
+    margin-top: var(--s-4);
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+
+  .release__files {
+    grid-column: 2;
+    list-style: none;
+    padding: 0;
+    margin: var(--s-8) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .release__files a {
+    display: inline-flex;
+    gap: var(--s-3);
+    padding: var(--s-2) var(--s-4);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-decoration: none;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+
+  .release__files a:hover {
+    border-color: var(--brass-dim);
+    color: var(--brass);
+  }
+
+  .release__files span {
+    color: var(--faint);
+  }
+
+  /* The rendered release body -------------------------------------------- */
+
+  .prose :global(h3) {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--track-label);
+    color: var(--brass);
+    margin-block: var(--s-8) var(--s-3);
+  }
+
+  .prose :global(h3:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(ul) {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .prose :global(li) {
+    margin-block: var(--s-2);
+    color: var(--muted);
+  }
+
+  .prose :global(li)::marker {
+    color: var(--brass-dim);
+  }
+
+  .prose :global(p) {
+    color: var(--muted);
+    margin-block: var(--s-3);
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--bone);
+  }
+
+  .prose :global(a) {
+    color: var(--brass);
+  }
+
+  @media (max-width: 52rem) {
+    .release {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .release__files {
+      grid-column: 1;
+    }
+  }
+</style>

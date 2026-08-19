@@ -1,0 +1,561 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Mark from "../components/Mark.astro";
+import StoreChip from "../components/StoreChip.astro";
+import { getLatest, pickInstaller, formatBytes } from "../lib/releases";
+
+import shotDetails from "../assets/shots/details.png";
+import shotLibrary from "../assets/shots/library.png";
+import shotCollections from "../assets/shots/collections.png";
+import shotCouch from "../assets/shots/couch-home.png";
+import shotDeals from "../assets/shots/deals.png";
+
+const base = import.meta.env.BASE_URL;
+const latest = await getLatest();
+const installer = pickInstaller(latest);
+
+const stores = [
+  { id: "steam", label: "Steam" },
+  { id: "epic", label: "Epic Games" },
+  { id: "gog", label: "GOG" },
+  { id: "amazon", label: "Amazon Games" },
+  { id: "ea", label: "EA" },
+  { id: "bnet", label: "Battle.net" },
+  { id: "ubi", label: "Ubisoft" },
+  { id: "msft", label: "Microsoft Store" },
+] as const;
+
+// What each store hands over without an account, and what it takes to get the
+// rest. Copied from docs/platforms.md in the app repository — if the two ever
+// disagree, that document is right and this table is stale.
+const reading = [
+  { store: "Steam", from: "libraryfolders.vdf and the .acf manifests" },
+  { store: "Epic Games", from: "the launcher's manifests, and its own saved login for the rest" },
+  { store: "GOG", from: "the Windows registry, and Galaxy's database" },
+  { store: "Amazon Games", from: "the client's own files — no account at all" },
+  { store: "EA", from: "the plain-XML manifest beside each install" },
+  { store: "Battle.net", from: "the Windows uninstall entries, which outlive the client" },
+  { store: "Ubisoft", from: "the launcher's own caches — no account at all" },
+  { store: "Microsoft Store", from: "the package manager and the Store's entitlement file" },
+];
+---
+
+<Base
+  title="Playfield — every PC store, one library"
+  description="A desktop game launcher that builds your library from the games already on this machine. Eight stores, no sign-in required."
+>
+  <section class="hero">
+    <div class="page hero__inner">
+      <div class="hero__lockup">
+        <Mark size={96} settle class="hero__mark" />
+        <h1 class="hero__title">
+          Eight stores.<br />
+          <span class="hero__title-brass">No passwords.</span>
+        </h1>
+        <p class="lede hero__lede">
+          Playfield builds your library out of what is already on this disk — the launchers'
+          own manifests, caches and registry keys. Not your accounts. It reads eight stores
+          this way, and asks you to sign in to none of them.
+        </p>
+
+        <div class="hero__actions">
+          {
+            installer ? (
+              <a class="btn btn-primary" href={installer.url} download>
+                Download for Windows
+              </a>
+            ) : (
+              <a class="btn btn-primary" href={`${base}download/`}>
+                Downloads
+              </a>
+            )
+          }
+          <p class="hero__meta">
+            {
+              latest
+                ? `${latest.version} · ${installer ? formatBytes(installer.size) : ""} · Windows 10 and 11`
+                : "No release yet"
+            }
+          </p>
+        </div>
+
+        <ul class="chiprow" aria-label="Stores Playfield reads">
+          {
+            stores.map((store) => (
+              <li>
+                <StoreChip store={store.id} label={store.label} size={30} />
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <figure class="shot shot--hero">
+        <Image src={shotDetails} alt="A game's page in Playfield, showing which stores it is owned on" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1100px" loading="eager" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="band" id="no-sign-in">
+    <div class="page band__inner">
+      <div class="band__text">
+        <p class="eyebrow">Every one of the eight, read off this machine</p>
+        <h2>A launcher already knows what you own. Playfield asks it, not you.</h2>
+        <p class="lede">
+          Every store on this list keeps a record on disk of what it sold you and what it
+          installed. Playfield reads those records where they sit. A sign-in exists as a
+          fallback, for a machine whose client has never run — and when a store needs no
+          account, its page says so instead of drawing one.
+        </p>
+      </div>
+      <dl class="reading">
+        {
+          reading.map((row) => (
+            <div class="reading__row">
+              <dt>{row.store}</dt>
+              <dd>{row.from}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="feature">
+    <div class="page feature__inner">
+      <div class="feature__text">
+        <p class="eyebrow">One row per game, not per purchase</p>
+        <h2>Bought twice, listed once.</h2>
+        <p class="lede">
+          The same game from three stores is one entry with three chips on it — filled where
+          it is installed, outlined where it is only owned. Play picks the copy that is
+          actually on disk. The library never lies about how many games you have.
+        </p>
+      </div>
+      <figure class="shot">
+        <Image src={shotLibrary} alt="The Playfield library, with shelves for what is playing now and what to jump back into" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1250px" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="feature feature--flip">
+    <div class="page feature__inner">
+      <div class="feature__text">
+        <p class="eyebrow">A collection is a question, not a folder</p>
+        <h2>Describe the shelf. It fills itself.</h2>
+        <p class="lede">
+          <code>beat&lt;15</code> is every game you could finish this month.
+          {" "}<code>store:gog playtime&lt;30</code> is what you bought on GOG and never started.
+          Write the query once; the shelf stays right as the library changes underneath it.
+        </p>
+      </div>
+      <figure class="shot">
+        <Image src={shotCollections} alt="Collections in Playfield, each one a saved query over the library" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1250px" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="feature">
+    <div class="page feature__inner">
+      <div class="feature__text">
+        <p class="eyebrow">The same library, from the sofa</p>
+        <h2>A second shell, built for a pad.</h2>
+        <p class="lede">
+          Not the desktop window scaled up. A separate shell over the same library, with its
+          own navigation, its own type sizes and controller prompts that match the pad in
+          your hands. Switch to it from the title bar or start the machine in it.
+        </p>
+      </div>
+      <figure class="shot">
+        <Image src={shotCouch} alt="Playfield's console shell, laid out for a controller at a distance" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1250px" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="page">
+      <p class="eyebrow">Beside the launching</p>
+      <h2 class="band__heading">The rest of what a library is for.</h2>
+      <div class="grid">
+        <article>
+          <h3>How long it takes</h3>
+          <p>
+            HowLongToBeat estimates on the page, naming the entry they came from, so a
+            wrong match is visible rather than quietly wrong.
+          </p>
+        </article>
+        <article>
+          <h3>Achievements</h3>
+          <p>
+            Read from Steam, GOG, Microsoft and Epic, and kept once read — a record
+            outlives the run that fetched it.
+          </p>
+        </article>
+        <article>
+          <h3>Trainers and cheats</h3>
+          <p>
+            Fetched, held beside the library, armed with the game and closed with it.
+            Windows only.
+          </p>
+        </article>
+        <article>
+          <h3>Prices worth waiting for</h3>
+          <p>
+            An IsThereAnyDeal waitlist in your own currency, in a pane of its own rather
+            than a browser tab.
+          </p>
+        </article>
+      </div>
+      <figure class="shot shot--wide">
+        <Image src={shotDeals} alt="The deals pane, showing waitlisted games at their current prices" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1100px" />
+      </figure>
+    </div>
+  </section>
+
+  <!-- The one section a product page usually leaves out. This project's own
+       documentation is written to be uncomfortable rather than encouraging, and
+       the page it ships behind should read the same way. -->
+  <section class="plate-wrap">
+    <div class="page">
+      <div class="plate">
+        <p class="eyebrow plate__eyebrow">Before you download it</p>
+        <h2 class="plate__heading">What does not work yet.</h2>
+        <dl class="plate__list">
+          <div>
+            <dt>Windows only</dt>
+            <dd>
+              The code is built to run on Linux and macOS and is tested there on every
+              push, but no one has launched a game on either. Until someone has, there is
+              no build to download.
+            </dd>
+          </div>
+          <div>
+            <dt>Unsigned</dt>
+            <dd>
+              Windows will call it an unrecognised app the first time. Open
+              {" "}<em>More info</em> and then <em>Run anyway</em>, or check the installer
+              against the checksums published with every release.
+            </dd>
+          </div>
+          <div>
+            <dt>Two stores need their client to install</dt>
+            <dd>
+              GOG installs through Galaxy and Battle.net through its own client. Uninstall
+              on EA and Battle.net runs a Windows registry command, which exists nowhere
+              else.
+            </dd>
+          </div>
+          <div>
+            <dt>No automatic updates</dt>
+            <dd>
+              Playfield does not check for new versions. New ones appear here, and the
+              changelog says what changed.
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="page closing__inner">
+      <h2 class="closing__heading">Your games, wherever you bought them.</h2>
+      <div class="hero__actions">
+        {
+          installer ? (
+            <a class="btn btn-primary" href={installer.url} download>
+              Download for Windows
+            </a>
+          ) : (
+            <a class="btn btn-primary" href={`${base}download/`}>
+              Downloads
+            </a>
+          )
+        }
+        <a class="btn btn-quiet" href={`${base}changelog/`}>Read the changelog</a>
+      </div>
+      {
+        latest && (
+          <p class="hero__meta">
+            {latest.version} · released {new Date(latest.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+          </p>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Hero ---------------------------------------------------------------- */
+
+  .hero {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem) 0;
+    /* A single brass wash behind the mark, low enough to read as light in the
+       room rather than as a gradient. */
+    background:
+      radial-gradient(60rem 32rem at 12% -10%, rgb(224 164 88 / 0.09), transparent 70%),
+      var(--ink);
+  }
+
+  .hero__lockup {
+    max-width: 52rem;
+  }
+
+  .hero__mark {
+    margin-bottom: var(--s-6);
+  }
+
+  .hero__title {
+    font-size: var(--text-display);
+    font-weight: 800;
+    letter-spacing: var(--track-display);
+    line-height: 0.94;
+  }
+
+  .hero__title-brass {
+    color: var(--brass);
+  }
+
+  .hero__lede {
+    margin-top: var(--s-6);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4) var(--s-6);
+    margin-top: var(--s-8);
+  }
+
+  .hero__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--faint);
+  }
+
+  .chiprow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    list-style: none;
+    padding: 0;
+    margin: var(--s-8) 0 0;
+  }
+
+  /* Screenshots ---------------------------------------------------------- */
+
+  .shot {
+    margin: 0;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--slate);
+    /* The window is a contained object sitting in its own room — the one place
+       this page uses a shadow. */
+    box-shadow: 0 2rem 5rem rgb(0 0 0 / 0.55);
+  }
+
+  .shot :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .shot--hero {
+    margin-top: clamp(2.5rem, 4vw, 3.5rem);
+    max-width: 72rem;
+  }
+
+  .shot--wide {
+    margin-top: var(--s-12);
+  }
+
+  /* Bands and features --------------------------------------------------- */
+
+  .band {
+    padding-block: var(--s-24);
+    border-top: 1px solid var(--hairline);
+    margin-top: var(--s-24);
+  }
+
+  .band__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  .band__text h2,
+  .band__heading {
+    font-size: var(--text-2xl);
+    margin-top: var(--s-4);
+  }
+
+  .band__text .lede {
+    margin-top: var(--s-6);
+  }
+
+  .band__heading {
+    max-width: 30rem;
+  }
+
+  .reading__row {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .reading__row:last-child {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .reading dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+    color: var(--bone);
+  }
+
+  .reading dd {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--faint);
+  }
+
+  .feature {
+    padding-block: var(--s-24) 0;
+  }
+
+  .feature__inner {
+    display: grid;
+    gap: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  .feature__text {
+    max-width: 44rem;
+  }
+
+  /* Every other statement sits against the right edge instead of the left, so
+     four sections of the same shape still read as a rhythm. */
+  .feature--flip .feature__text {
+    margin-left: auto;
+  }
+
+  .feature__text h2 {
+    font-size: var(--text-2xl);
+    margin-top: var(--s-4);
+  }
+
+  .feature__text .lede {
+    margin-top: var(--s-6);
+  }
+
+  .feature__text code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--brass);
+    background: var(--slate);
+    border: 1px solid var(--hairline);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--s-8);
+    margin-top: var(--s-12);
+  }
+
+  .grid h3 {
+    font-size: var(--text-xl);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--brass-dim);
+  }
+
+  .grid p {
+    margin-top: var(--s-3);
+    color: var(--faint);
+    font-size: var(--text-sm);
+  }
+
+  /* The plate ------------------------------------------------------------ */
+
+  .plate-wrap {
+    padding-block: var(--s-24);
+  }
+
+  .plate {
+    border: 1px solid var(--brass-dim);
+    border-radius: var(--radius-lg);
+    padding: clamp(1.75rem, 4vw, 3.5rem);
+    background: linear-gradient(180deg, rgb(224 164 88 / 0.05), transparent 60%), var(--slate);
+  }
+
+  .plate__eyebrow {
+    color: var(--brass);
+  }
+
+  .plate__heading {
+    font-size: var(--text-2xl);
+    margin-top: var(--s-4);
+  }
+
+  .plate__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--s-8);
+    margin: var(--s-12) 0 0;
+  }
+
+  .plate__list dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--track-label);
+    color: var(--brass);
+  }
+
+  .plate__list dd {
+    margin: var(--s-3) 0 0;
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+
+  /* Closing -------------------------------------------------------------- */
+
+  .closing {
+    padding-block: var(--s-16) var(--s-8);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .closing__heading {
+    font-size: var(--text-3xl);
+    max-width: 20ch;
+  }
+
+  .closing .hero__actions {
+    margin-top: var(--s-8);
+  }
+
+  /* Narrow --------------------------------------------------------------- */
+
+  @media (max-width: 60rem) {
+    .band__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .feature--flip .feature__text {
+      margin-left: 0;
+    }
+
+
+    .reading__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-1);
+    }
+  }
+</style>
