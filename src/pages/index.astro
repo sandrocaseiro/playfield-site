@@ -37,24 +37,24 @@ const rest = [
   {
     id: "beat",
     tab: "Playtime and progress",
-    heading: "Where you are in it, against how long it takes.",
-    body: "HowLongToBeat gives three lengths — main story, extras, and everything — and the line beneath them names the entry they came from, so a wrong match is something you can correct rather than a number quietly about another game. Beside it sits your own playtime, summed from every store that sold you the game and run against the main-story estimate: a bar that fills to the estimate and stops, and a sentence that says when you are past it. Four states — backlog, playing, completed, retired — with none of them preselected, because a game nobody has said anything about should not sit in a backlog it was never put in. The hours are yours to correct, for time played on a console or with the client offline, and one press puts the stores' number back.",
+    heading: "How long it takes, and how far in you are.",
+    body: "Main story, extras, and everything — from HowLongToBeat, next to the hours you have actually played. Mark a game backlog, playing, completed or retired, and correct the hours yourself when a store has them wrong.",
     shot: shotBeat,
     alt: "A game's page in Playfield, showing how long it takes to beat beside how long it has been played",
   },
   {
     id: "achievements",
     tab: "Achievements",
-    heading: "Two copies, two records, one honest answer.",
-    body: "Read from Steam, GOG, Microsoft and Epic. When the same game has been played on more than one of them, the page says how many were earned on each and how many you hold across all of them — rather than picking a copy and calling it the total. What has been read once is kept, so a record outlives the run that fetched it.",
+    heading: "Every achievement, from every store.",
+    body: "Steam, GOG, Microsoft and Epic, on the game's own page. Played the same game on two of them? You get both records and the total across them.",
     shot: shotAchievements,
     alt: "The achievements panel, showing one game's Steam and GOG records side by side",
   },
   {
     id: "cheats",
     tab: "Trainers and cheats",
-    heading: "Downloaded, filed, and checked against the build on disk.",
-    body: "Trainers come from FLiNG and GameCopyWorld. Playfield fetches one, keeps it beside the library instead of loose in a downloads folder, tells you whether it matches the version you have installed, and starts it with the game and closes it with the game. Windows only.",
+    heading: "Cheats, without the download hunt.",
+    body: "Get a trainer in one press. Playfield keeps it with your library, tells you if it fits the version you have, and starts and closes it with the game. Windows only.",
     shot: shotCheats,
     alt: "A game's page with its trainer panel, naming the version and the options it carries",
   },
@@ -62,7 +62,7 @@ const rest = [
     id: "deals",
     tab: "Prices worth waiting for",
     heading: "A waitlist that knows what you already own.",
-    body: "An IsThereAnyDeal waitlist in your own currency and your own shops, in a pane of its own rather than a browser tab. It marks a new low, a shop low and an all-time low apart, counts the offers down to their deadline, and says when something on the list is already yours.",
+    body: "Watch the games you want and catch them when they drop. Your currency, your shops, a countdown on offers about to end, and a mark on anything at its lowest price yet.",
     shot: shotDeals,
     alt: "The deals pane, showing waitlisted games at their current prices across several shops",
   },
@@ -127,14 +127,13 @@ const rest = [
   <section class="band" id="no-sign-in">
     <div class="page statement">
       <div>
-        <p class="eyebrow">Nothing to set up</p>
-        <h2>Open it. Your library is already there.</h2>
+        <p class="eyebrow">Nothing to sign in to</p>
+        <h2>Open it. It finds your games.</h2>
       </div>
       <div class="statement__body">
         <p class="lede">
-          No accounts to connect, no passwords to type, no waiting on a scan. Playfield
-          finds the games this machine already has, and the shelf is full the first time you
-          open it.
+          No accounts to connect and no passwords to type. Playfield scans the launchers
+          already on this machine and builds the shelf out of what it finds.
         </p>
       </div>
     </div>
@@ -146,9 +145,8 @@ const rest = [
         <p class="eyebrow">One row per game, not per purchase</p>
         <h2>Bought twice, listed once.</h2>
         <p class="lede">
-          The same game from three stores is one entry with three chips on it — filled where
-          it is installed, outlined where it is only owned. Play picks the copy that is
-          actually on disk. The library never lies about how many games you have.
+          The same game from three stores is one entry, not three. Press Play and it starts
+          the copy you actually have installed.
         </p>
       </div>
       <figure class="shot">
@@ -178,12 +176,11 @@ const rest = [
   <section class="feature">
     <div class="page feature__inner">
       <div class="feature__text">
-        <p class="eyebrow">The same library, from the sofa</p>
-        <h2>A second shell, built for a pad.</h2>
+        <p class="eyebrow">From the sofa</p>
+        <h2>Made for a controller and a television.</h2>
         <p class="lede">
-          Not the desktop window scaled up. A separate shell over the same library, with its
-          own navigation, its own type sizes and controller prompts that match the pad in
-          your hands. Switch to it from the title bar or start the machine in it.
+          The same library, sized for the far side of the room and driven entirely from a
+          pad. Switch to it from the title bar, or start the machine straight into it.
         </p>
       </div>
       <figure class="shot">
@@ -195,15 +192,12 @@ const rest = [
   <section class="feature feature--flip">
     <div class="page feature__inner">
       <div class="feature__text">
-        <p class="eyebrow">Vibepollo, on the machine the games are on</p>
+        <p class="eyebrow">Streaming</p>
         <h2>Your shelf, on the client in the other room.</h2>
         <p class="lede">
-          Playfield puts the games you choose onto a Vibepollo host as app entries of their
-          own, so a Moonlight client starts one without opening a launcher first. One
-          collection, narrowed to what is actually installed, plus a single entry that puts
-          the couch shell on the television. Everything Playfield wrote is listed with a
-          bin, all of it comes off in one press, and nothing you put on the host yourself is
-          ever touched.
+          Pick a collection and those games appear on your Vibepollo host, ready to start
+          from any Moonlight client. The couch shell goes over with them, so the television
+          gets the whole library.
         </p>
       </div>
       <figure class="shot">
