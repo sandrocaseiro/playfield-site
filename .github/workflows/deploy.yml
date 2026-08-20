@@ -25,7 +25,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # A release event's ref is the tag it was cut from, which is a fixed point
+      # in the past — editing an old release would otherwise rebuild the site as
+      # it stood then. The site is always the default branch; only the release
+      # data it reads is allowed to be old.
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 22
