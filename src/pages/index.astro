@@ -10,6 +10,9 @@ import shotLibrary from "../assets/shots/library.png";
 import shotCollections from "../assets/shots/collections.png";
 import shotCouch from "../assets/shots/couch-home.png";
 import shotDeals from "../assets/shots/deals.png";
+import shotBeat from "../assets/shots/beat.png";
+import shotAchievements from "../assets/shots/achievements.png";
+import shotCheats from "../assets/shots/cheats.png";
 
 const base = import.meta.env.BASE_URL;
 const latest = await getLatest();
@@ -26,37 +29,61 @@ const stores = [
   { id: "msft", label: "Microsoft Store" },
 ] as const;
 
-// What each store hands over without an account, and what it takes to get the
-// rest. Copied from docs/platforms.md in the app repository — if the two ever
-// disagree, that document is right and this table is stale.
-const reading = [
-  { store: "Steam", from: "libraryfolders.vdf and the .acf manifests" },
-  { store: "Epic Games", from: "the launcher's manifests, and its own saved login for the rest" },
-  { store: "GOG", from: "the Windows registry, and Galaxy's database" },
-  { store: "Amazon Games", from: "the client's own files — no account at all" },
-  { store: "EA", from: "the plain-XML manifest beside each install" },
-  { store: "Battle.net", from: "the Windows uninstall entries, which outlive the client" },
-  { store: "Ubisoft", from: "the launcher's own caches — no account at all" },
-  { store: "Microsoft Store", from: "the package manager and the Store's entitlement file" },
+// The four panes of the tabbed section. Each one is a screen of the real
+// application, so the tab it sits behind is named after what that screen shows
+// rather than after the service it reads.
+const rest = [
+  {
+    id: "beat",
+    tab: "Playtime and progress",
+    heading: "Where you are in it, against how long it takes.",
+    body: "HowLongToBeat gives three lengths — main story, extras, and everything — and the line beneath them names the entry they came from, so a wrong match is something you can correct rather than a number quietly about another game. Beside it sits your own playtime, summed from every store that sold you the game and run against the main-story estimate: a bar that fills to the estimate and stops, and a sentence that says when you are past it. Four states — backlog, playing, completed, retired — with none of them preselected, because a game nobody has said anything about should not sit in a backlog it was never put in. The hours are yours to correct, for time played on a console or with the client offline, and one press puts the stores' number back.",
+    shot: shotBeat,
+    alt: "A game's page in Playfield, showing how long it takes to beat beside how long it has been played",
+  },
+  {
+    id: "achievements",
+    tab: "Achievements",
+    heading: "Two copies, two records, one honest answer.",
+    body: "Read from Steam, GOG, Microsoft and Epic. When the same game has been played on more than one of them, the page says how many were earned on each and how many you hold across all of them — rather than picking a copy and calling it the total. What has been read once is kept, so a record outlives the run that fetched it.",
+    shot: shotAchievements,
+    alt: "The achievements panel, showing one game's Steam and GOG records side by side",
+  },
+  {
+    id: "cheats",
+    tab: "Trainers and cheats",
+    heading: "Downloaded, filed, and checked against the build on disk.",
+    body: "Trainers come from FLiNG and GameCopyWorld. Playfield fetches one, keeps it beside the library instead of loose in a downloads folder, tells you whether it matches the version you have installed, and starts it with the game and closes it with the game. Windows only.",
+    shot: shotCheats,
+    alt: "A game's page with its trainer panel, naming the version and the options it carries",
+  },
+  {
+    id: "deals",
+    tab: "Prices worth waiting for",
+    heading: "A waitlist that knows what you already own.",
+    body: "An IsThereAnyDeal waitlist in your own currency and your own shops, in a pane of its own rather than a browser tab. It marks a new low, a shop low and an all-time low apart, counts the offers down to their deadline, and says when something on the list is already yours.",
+    shot: shotDeals,
+    alt: "The deals pane, showing waitlisted games at their current prices across several shops",
+  },
 ];
 ---
 
 <Base
-  title="Playfield — every PC store, one library"
-  description="A desktop game launcher that builds your library from the games already on this machine. Eight stores, no sign-in required."
+  title="Playfield — all your games, every store, one library"
+  description="A desktop game launcher that puts every PC store's games on one shelf, built from what is already on this machine."
 >
   <section class="hero">
     <div class="page hero__inner">
       <div class="hero__lockup">
         <Mark size={96} settle class="hero__mark" />
         <h1 class="hero__title">
-          Eight stores.<br />
-          <span class="hero__title-brass">No passwords.</span>
+          All your games.<br />
+          <span class="hero__title-brass">Every store.<br />One place.</span>
         </h1>
         <p class="lede hero__lede">
-          Playfield builds your library out of what is already on this disk — the launchers'
-          own manifests, caches and registry keys. Not your accounts. It reads eight stores
-          this way, and asks you to sign in to none of them.
+          Steam, Epic, GOG, Amazon, EA, Battle.net, Ubisoft and the Microsoft Store, on one
+          shelf. Playfield builds it out of what is already on this disk — so there is
+          nothing to import, and nothing to sign in to.
         </p>
 
         <div class="hero__actions">
@@ -98,27 +125,22 @@ const reading = [
   </section>
 
   <section class="band" id="no-sign-in">
-    <div class="page band__inner">
-      <div class="band__text">
-        <p class="eyebrow">Every one of the eight, read off this machine</p>
+    <div class="page statement">
+      <div>
+        <p class="eyebrow">Nothing to sign in to</p>
         <h2>A launcher already knows what you own. Playfield asks it, not you.</h2>
+      </div>
+      <div class="statement__body">
         <p class="lede">
-          Every store on this list keeps a record on disk of what it sold you and what it
-          installed. Playfield reads those records where they sit. A sign-in exists as a
-          fallback, for a machine whose client has never run — and when a store needs no
-          account, its page says so instead of drawing one.
+          Every one of the eight keeps a record on this machine of what it sold you and what
+          it installed — manifests, caches, registry keys. Playfield reads those where they
+          sit, which is why the library is there the first time you open it.
+        </p>
+        <p class="lede">
+          A sign-in exists as a fallback, for a machine whose client has never run. Where a
+          store needs no account at all, its page says so instead of drawing one.
         </p>
       </div>
-      <dl class="reading">
-        {
-          reading.map((row) => (
-            <div class="reading__row">
-              <dt>{row.store}</dt>
-              <dd>{row.from}</dd>
-            </div>
-          ))
-        }
-      </dl>
     </div>
   </section>
 
@@ -146,8 +168,9 @@ const reading = [
         <h2>Describe the shelf. It fills itself.</h2>
         <p class="lede">
           <code>beat&lt;15</code> is every game you could finish this month.
-          {" "}<code>store:gog playtime&lt;30</code> is what you bought on GOG and never started.
-          Write the query once; the shelf stays right as the library changes underneath it.
+          {" "}<code>store:gog -played:</code> is what you bought on GOG and never once
+          started. Write the query one time; the shelf stays right as the library changes
+          underneath it.
         </p>
       </div>
       <figure class="shot">
@@ -174,86 +197,79 @@ const reading = [
   </section>
 
   <section class="band">
-    <div class="page">
-      <p class="eyebrow">Beside the launching</p>
-      <h2 class="band__heading">The rest of what a library is for.</h2>
-      <div class="grid">
-        <article>
-          <h3>How long it takes</h3>
-          <p>
-            HowLongToBeat estimates on the page, naming the entry they came from, so a
-            wrong match is visible rather than quietly wrong.
-          </p>
-        </article>
-        <article>
-          <h3>Achievements</h3>
-          <p>
-            Read from Steam, GOG, Microsoft and Epic, and kept once read — a record
-            outlives the run that fetched it.
-          </p>
-        </article>
-        <article>
-          <h3>Trainers and cheats</h3>
-          <p>
-            Fetched, held beside the library, armed with the game and closed with it.
-            Windows only.
-          </p>
-        </article>
-        <article>
-          <h3>Prices worth waiting for</h3>
-          <p>
-            An IsThereAnyDeal waitlist in your own currency, in a pane of its own rather
-            than a browser tab.
-          </p>
-        </article>
+    <div class="page statement">
+      <div>
+        <p class="eyebrow">Vibepollo, on the machine the games are on</p>
+        <h2>Your shelf, on the client in the other room.</h2>
       </div>
-      <figure class="shot shot--wide">
-        <Image src={shotDeals} alt="The deals pane, showing waitlisted games at their current prices" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1100px" />
-      </figure>
+      <div class="statement__body">
+        <p class="lede">
+          Playfield writes the games you choose onto a Vibepollo host as its own app
+          entries, so a Moonlight client can start one without opening a launcher first. One
+          collection, narrowed to what is actually installed — a game that is not on this
+          disk cannot be streamed — plus a single entry that puts the couch shell on the
+          television.
+        </p>
+        <p class="lede">
+          It pushes to the host's own config API over loopback, with a token you mint and
+          can revoke, and never pretends to be the Playnite connector Vibepollo normally
+          reads. Every entry Playfield put there is listed with a bin, all of them come off
+          in one press, and nothing you put on the host yourself is ever touched.
+        </p>
+      </div>
     </div>
   </section>
 
-  <!-- The one section a product page usually leaves out. This project's own
-       documentation is written to be uncomfortable rather than encouraging, and
-       the page it ships behind should read the same way. -->
-  <section class="plate-wrap">
+  <section class="rest">
     <div class="page">
-      <div class="plate">
-        <p class="eyebrow plate__eyebrow">Before you download it</p>
-        <h2 class="plate__heading">What does not work yet.</h2>
-        <dl class="plate__list">
-          <div>
-            <dt>Windows only</dt>
-            <dd>
-              The code is built to run on Linux and macOS and is tested there on every
-              push, but no one has launched a game on either. Until someone has, there is
-              no build to download.
-            </dd>
-          </div>
-          <div>
-            <dt>Unsigned</dt>
-            <dd>
-              Windows will call it an unrecognised app the first time. Open
-              {" "}<em>More info</em> and then <em>Run anyway</em>, or check the installer
-              against the checksums published with every release.
-            </dd>
-          </div>
-          <div>
-            <dt>Two stores need their client to install</dt>
-            <dd>
-              GOG installs through Galaxy and Battle.net through its own client. Uninstall
-              on EA and Battle.net runs a Windows registry command, which exists nowhere
-              else.
-            </dd>
-          </div>
-          <div>
-            <dt>No automatic updates</dt>
-            <dd>
-              Playfield does not check for new versions. New ones appear here, and the
-              changelog says what changed.
-            </dd>
-          </div>
-        </dl>
+      <p class="eyebrow">Beside the launching</p>
+      <h2 class="rest__heading">The rest of what a library is for.</h2>
+
+      <div class="tabs" data-tabs>
+        <div class="tabs__bar" role="tablist" aria-label="What else Playfield does">
+          {
+            rest.map((pane, i) => (
+              <button
+                class="tabs__tab"
+                role="tab"
+                type="button"
+                id={`tab-${pane.id}`}
+                aria-controls={`pane-${pane.id}`}
+                aria-selected={i === 0 ? "true" : "false"}
+                tabindex={i === 0 ? 0 : -1}
+              >
+                {pane.tab}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          rest.map((pane, i) => (
+            <div
+              class="tabs__pane"
+              role="tabpanel"
+              id={`pane-${pane.id}`}
+              aria-labelledby={`tab-${pane.id}`}
+              tabindex="0"
+              data-first={i === 0 ? "true" : undefined}
+            >
+              <div class="tabs__text">
+                <h3>{pane.heading}</h3>
+                <p>{pane.body}</p>
+              </div>
+              <figure class="shot">
+                <Image
+                  src={pane.shot}
+                  alt={pane.alt}
+                  widths={[900, 1400, 1920]}
+                  sizes="(max-width: 60rem) 100vw, 1100px"
+                  loading="lazy"
+                />
+              </figure>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -285,6 +301,43 @@ const reading = [
     </div>
   </section>
 </Base>
+
+<script>
+  // The panes are all in the document and all visible until this runs, so the
+  // section reads as four stacked sections without JavaScript and collapses to
+  // one at a time with it.
+  for (const root of document.querySelectorAll<HTMLElement>("[data-tabs]")) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panes = tabs.map((tab) =>
+      document.getElementById(tab.getAttribute("aria-controls")!),
+    );
+
+    const show = (index: number, focus: boolean) => {
+      tabs.forEach((tab, i) => {
+        const on = i === index;
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        tab.tabIndex = on ? 0 : -1;
+        panes[i]?.toggleAttribute("hidden", !on);
+      });
+      if (focus) tabs[index]!.focus();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => show(i, false));
+      tab.addEventListener("keydown", (event) => {
+        const step = { ArrowRight: 1, ArrowLeft: -1, Home: -i, End: tabs.length - 1 - i }[
+          event.key
+        ];
+        if (step === undefined) return;
+        event.preventDefault();
+        show((i + step + tabs.length) % tabs.length, true);
+      });
+    });
+
+    root.dataset.live = "true";
+    show(0, false);
+  }
+</script>
 
 <style>
   /* Hero ---------------------------------------------------------------- */
@@ -367,10 +420,6 @@ const reading = [
     max-width: 72rem;
   }
 
-  .shot--wide {
-    margin-top: var(--s-12);
-  }
-
   /* Bands and features --------------------------------------------------- */
 
   .band {
@@ -379,50 +428,22 @@ const reading = [
     margin-top: var(--s-24);
   }
 
-  .band__inner {
+  /* A claim on the left, the working of it on the right — the shape the bands
+     kept when the per-store table came out of them. */
+  .statement {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(2rem, 6vw, 5rem);
     align-items: start;
   }
 
-  .band__text h2,
-  .band__heading {
+  .statement h2 {
     font-size: var(--text-2xl);
     margin-top: var(--s-4);
   }
 
-  .band__text .lede {
+  .statement__body .lede + .lede {
     margin-top: var(--s-6);
-  }
-
-  .band__heading {
-    max-width: 30rem;
-  }
-
-  .reading__row {
-    display: grid;
-    grid-template-columns: 10rem minmax(0, 1fr);
-    gap: var(--s-4);
-    padding-block: var(--s-3);
-    border-top: 1px solid var(--hairline);
-  }
-
-  .reading__row:last-child {
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  .reading dt {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    letter-spacing: 0.02em;
-    color: var(--bone);
-  }
-
-  .reading dd {
-    margin: 0;
-    font-size: var(--text-sm);
-    color: var(--faint);
   }
 
   .feature {
@@ -461,68 +482,87 @@ const reading = [
     border: 1px solid var(--hairline);
     border-radius: 3px;
     padding: 0.1em 0.35em;
+    /* A query broken across two lines reads as two queries. */
+    white-space: nowrap;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: var(--s-8);
-    margin-top: var(--s-12);
-  }
+  /* The tabbed section --------------------------------------------------- */
 
-  .grid h3 {
-    font-size: var(--text-xl);
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--brass-dim);
-  }
-
-  .grid p {
-    margin-top: var(--s-3);
-    color: var(--faint);
-    font-size: var(--text-sm);
-  }
-
-  /* The plate ------------------------------------------------------------ */
-
-  .plate-wrap {
+  .rest {
     padding-block: var(--s-24);
+    border-top: 1px solid var(--hairline);
+    margin-top: var(--s-24);
   }
 
-  .plate {
-    border: 1px solid var(--brass-dim);
-    border-radius: var(--radius-lg);
-    padding: clamp(1.75rem, 4vw, 3.5rem);
-    background: linear-gradient(180deg, rgb(224 164 88 / 0.05), transparent 60%), var(--slate);
-  }
-
-  .plate__eyebrow {
-    color: var(--brass);
-  }
-
-  .plate__heading {
+  .rest__heading {
     font-size: var(--text-2xl);
     margin-top: var(--s-4);
+    max-width: 30rem;
   }
 
-  .plate__list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-    gap: var(--s-8);
-    margin: var(--s-12) 0 0;
+  .tabs__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1);
+    margin-top: var(--s-12);
+    border-bottom: 1px solid var(--hairline);
   }
 
-  .plate__list dt {
-    font-family: var(--font-mono);
+  .tabs__tab {
+    appearance: none;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    padding: var(--s-3) var(--s-4);
+    font: inherit;
     font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: var(--track-label);
+    color: var(--faint);
+    cursor: pointer;
+    transition: color 140ms ease, border-color 140ms ease;
+  }
+
+  .tabs__tab:hover {
+    color: var(--bone);
+  }
+
+  .tabs__tab[aria-selected="true"] {
     color: var(--brass);
+    border-bottom-color: var(--brass);
   }
 
-  .plate__list dd {
-    margin: var(--s-3) 0 0;
+  .tabs__pane {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding-top: var(--s-12);
+  }
+
+  /* Without the script every pane stays in the flow, so each one needs the rule
+     the tab bar would otherwise draw between them. */
+  .tabs:not([data-live]) .tabs__pane + .tabs__pane {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .tabs__pane[hidden] {
+    display: none;
+  }
+
+  .tabs__pane:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: var(--s-4);
+  }
+
+  .tabs__text {
+    max-width: 44rem;
+  }
+
+  .tabs__text h3 {
+    font-size: var(--text-xl);
+  }
+
+  .tabs__text p {
+    margin-top: var(--s-4);
     color: var(--muted);
-    font-size: var(--text-sm);
   }
 
   /* Closing -------------------------------------------------------------- */
@@ -544,18 +584,12 @@ const reading = [
   /* Narrow --------------------------------------------------------------- */
 
   @media (max-width: 60rem) {
-    .band__inner {
+    .statement {
       grid-template-columns: minmax(0, 1fr);
     }
 
     .feature--flip .feature__text {
       margin-left: 0;
-    }
-
-
-    .reading__row {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s-1);
     }
   }
 </style>
