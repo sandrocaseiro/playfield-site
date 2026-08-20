@@ -13,6 +13,7 @@ import shotDeals from "../assets/shots/deals.png";
 import shotBeat from "../assets/shots/beat.png";
 import shotAchievements from "../assets/shots/achievements.png";
 import shotCheats from "../assets/shots/cheats.png";
+import shotStream from "../assets/shots/stream.png";
 
 const base = import.meta.env.BASE_URL;
 const latest = await getLatest();
@@ -81,9 +82,8 @@ const rest = [
           <span class="hero__title-brass">Every store.<br />One place.</span>
         </h1>
         <p class="lede hero__lede">
-          Steam, Epic, GOG, Amazon, EA, Battle.net, Ubisoft and the Microsoft Store, on one
-          shelf. Playfield builds it out of what is already on this disk — so there is
-          nothing to import, and nothing to sign in to.
+          Steam, Epic, GOG, Amazon, EA, Battle.net, Ubisoft and the Microsoft Store — every
+          game you own, on one shelf.
         </p>
 
         <div class="hero__actions">
@@ -127,18 +127,14 @@ const rest = [
   <section class="band" id="no-sign-in">
     <div class="page statement">
       <div>
-        <p class="eyebrow">Nothing to sign in to</p>
-        <h2>A launcher already knows what you own. Playfield asks it, not you.</h2>
+        <p class="eyebrow">Nothing to set up</p>
+        <h2>Open it. Your library is already there.</h2>
       </div>
       <div class="statement__body">
         <p class="lede">
-          Every one of the eight keeps a record on this machine of what it sold you and what
-          it installed — manifests, caches, registry keys. Playfield reads those where they
-          sit, which is why the library is there the first time you open it.
-        </p>
-        <p class="lede">
-          A sign-in exists as a fallback, for a machine whose client has never run. Where a
-          store needs no account at all, its page says so instead of drawing one.
+          No accounts to connect, no passwords to type, no waiting on a scan. Playfield
+          finds the games this machine already has, and the shelf is full the first time you
+          open it.
         </p>
       </div>
     </div>
@@ -196,27 +192,23 @@ const rest = [
     </div>
   </section>
 
-  <section class="band">
-    <div class="page statement">
-      <div>
+  <section class="feature feature--flip">
+    <div class="page feature__inner">
+      <div class="feature__text">
         <p class="eyebrow">Vibepollo, on the machine the games are on</p>
         <h2>Your shelf, on the client in the other room.</h2>
-      </div>
-      <div class="statement__body">
         <p class="lede">
-          Playfield writes the games you choose onto a Vibepollo host as its own app
-          entries, so a Moonlight client can start one without opening a launcher first. One
-          collection, narrowed to what is actually installed — a game that is not on this
-          disk cannot be streamed — plus a single entry that puts the couch shell on the
-          television.
-        </p>
-        <p class="lede">
-          It pushes to the host's own config API over loopback, with a token you mint and
-          can revoke, and never pretends to be the Playnite connector Vibepollo normally
-          reads. Every entry Playfield put there is listed with a bin, all of them come off
-          in one press, and nothing you put on the host yourself is ever touched.
+          Playfield puts the games you choose onto a Vibepollo host as app entries of their
+          own, so a Moonlight client starts one without opening a launcher first. One
+          collection, narrowed to what is actually installed, plus a single entry that puts
+          the couch shell on the television. Everything Playfield wrote is listed with a
+          bin, all of it comes off in one press, and nothing you put on the host yourself is
+          ever touched.
         </p>
       </div>
+      <figure class="shot">
+        <Image src={shotStream} alt="Playfield's Vibepollo tab, with the host address filled in and a token to paste" widths={[900, 1400, 1920]} sizes="(max-width: 60rem) 100vw, 1250px" />
+      </figure>
     </div>
   </section>
 
@@ -500,35 +492,48 @@ const rest = [
     max-width: 30rem;
   }
 
+  /* A segmented control rather than a row of underlined words — the shape the
+     application itself uses wherever one of a few states is current. */
   .tabs__bar {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
     gap: var(--s-1);
     margin-top: var(--s-12);
-    border-bottom: 1px solid var(--hairline);
+    padding: var(--s-1);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    background: var(--slate);
   }
 
   .tabs__tab {
     appearance: none;
     background: none;
     border: 0;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    padding: var(--s-3) var(--s-4);
+    border-radius: var(--radius);
+    padding: var(--s-3) var(--s-6);
     font: inherit;
     font-size: var(--text-sm);
+    line-height: 1.2;
     color: var(--faint);
     cursor: pointer;
-    transition: color 140ms ease, border-color 140ms ease;
+    transition: background 140ms ease, color 140ms ease;
   }
 
   .tabs__tab:hover {
+    background: var(--slate-hi);
     color: var(--bone);
   }
 
-  .tabs__tab[aria-selected="true"] {
-    color: var(--brass);
-    border-bottom-color: var(--brass);
+  .tabs__tab:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+  }
+
+  .tabs__tab[aria-selected="true"],
+  .tabs__tab[aria-selected="true"]:hover {
+    background: var(--brass);
+    color: var(--on-accent);
+    font-weight: 600;
   }
 
   .tabs__pane {
