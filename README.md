@@ -26,6 +26,12 @@ deliberate, because the site has to go up before there is anything to download.
 `RELEASES_REPO` overrides which repository it reads, which is the only way to
 see the changelog page populated before this one has releases of its own.
 
+`PUBLIC_GA_MEASUREMENT_ID` is the Google Analytics 4 measurement ID (`G-…`).
+It is only read in a production build, so `npm run dev` never reports, and a
+build without it ships no analytics at all and still deploys. On GitHub it lives
+as a repository *variable*, not a secret — the ID is public by nature, it is in
+the page source of every visit.
+
 ## What is where
 
 | | |

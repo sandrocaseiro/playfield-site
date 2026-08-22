@@ -44,8 +44,8 @@ jobs:
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Absent, the build simply ships no beacon and the site still deploys.
-          PUBLIC_CF_BEACON_TOKEN: ${{ vars.PUBLIC_CF_BEACON_TOKEN }}
+          # Absent, the build simply ships no analytics and the site still deploys.
+          PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
         run: npm run build
 
       - uses: actions/configure-pages@v5

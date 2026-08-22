@@ -9,10 +9,10 @@ interface Props {
 const { title, description } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const here = Astro.url.pathname;
-// The beacon token is not a secret — it ships in the page source of every
+// The measurement ID is not a secret — it ships in the page source of every
 // visit. It is read only in a production build so that `astro dev` page loads
 // stay out of the numbers, and so a local build requests nothing at all.
-const beacon = import.meta.env.PROD ? import.meta.env.PUBLIC_CF_BEACON_TOKEN : undefined;
+const gaId = import.meta.env.PROD ? import.meta.env.PUBLIC_GA_MEASUREMENT_ID : undefined;
 const nav = [
   { href: `${base}download/`, label: "Download" },
   { href: `${base}changelog/`, label: "Changelog" },
@@ -70,13 +70,21 @@ const nav = [
       </div>
     </footer>
     {
-      beacon && (
-        <script
-          is:inline
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon={JSON.stringify({ token: beacon })}
-        />
+      gaId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+          <script is:inline define:vars={{ gaId }}>
+            // `define:vars` wraps this in an IIFE, so gtag is hung on window
+            // deliberately — that is the name the rest of the site calls to
+            // send an event.
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = function gtag() {
+              window.dataLayer.push(arguments);
+            };
+            gtag("js", new Date());
+            gtag("config", gaId);
+          </script>
+        </>
       )
     }
   </body>
