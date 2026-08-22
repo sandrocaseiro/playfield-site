@@ -9,6 +9,10 @@ interface Props {
 const { title, description } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const here = Astro.url.pathname;
+// The beacon token is not a secret — it ships in the page source of every
+// visit. It is read only in a production build so that `astro dev` page loads
+// stay out of the numbers, and so a local build requests nothing at all.
+const beacon = import.meta.env.PROD ? import.meta.env.PUBLIC_CF_BEACON_TOKEN : undefined;
 const nav = [
   { href: `${base}download/`, label: "Download" },
   { href: `${base}changelog/`, label: "Changelog" },
@@ -65,6 +69,16 @@ const nav = [
         </p>
       </div>
     </footer>
+    {
+      beacon && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: beacon })}
+        />
+      )
+    }
   </body>
 </html>
 
