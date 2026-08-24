@@ -17,7 +17,7 @@ const describe: Record<string, string> = {
 
 <Base
   title="Download Playfield"
-  description="Playfield for Windows — installer, MSI package and checksums, with what to expect the first time you run it."
+  description="Playfield for Windows — installer, MSI package and checksums."
 >
   <section class="head">
     <div class="page">
@@ -52,42 +52,6 @@ const describe: Record<string, string> = {
       </section>
     )
   }
-
-  <section class="page notes">
-    <div class="note">
-      <h2>Windows will not recognise it</h2>
-      <p>
-        Playfield is not code-signed, so SmartScreen calls it an unrecognised app the first
-        time you run the installer. Choose <em>More info</em>, then <em>Run anyway</em>. If
-        you would rather check first, every release publishes
-        {" "}<code>SHA256SUMS.txt</code> — compare it with
-        {" "}<code>Get-FileHash .\Playfield_setup.exe</code> in PowerShell.
-      </p>
-    </div>
-    <div class="note">
-      <h2>Nothing to sign in to</h2>
-      <p>
-        On first run Playfield looks for the launchers already installed on this machine and
-        reads what they know. There is no Playfield account, and there never will be. A store
-        that cannot be read without one says so on its own page in Settings.
-      </p>
-    </div>
-    <div class="note">
-      <h2>Windows only, for now</h2>
-      <p>
-        The library, the matching and the database are platform-free and are compiled and
-        tested on Linux and macOS on every change. Neither has ever launched a game, so
-        neither gets a build here yet.
-      </p>
-    </div>
-    <div class="note">
-      <h2>It will not update itself</h2>
-      <p>
-        There is no updater. New versions appear on this page, and the
-        {" "}<a href={`${base}changelog/`}>changelog</a> says what changed in each.
-      </p>
-    </div>
-  </section>
 
   {
     older.length > 0 && (
@@ -127,7 +91,7 @@ const describe: Record<string, string> = {
   .files {
     display: grid;
     gap: var(--s-2);
-    margin-block: var(--s-8);
+    margin-block: var(--s-8) var(--s-16);
   }
 
   .file {
@@ -165,32 +129,6 @@ const describe: Record<string, string> = {
     font-size: var(--text-sm);
     color: var(--muted);
     white-space: nowrap;
-  }
-
-  .notes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--s-8);
-    margin-block: var(--s-16);
-  }
-
-  .note h2 {
-    font-size: var(--text-xl);
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--brass-dim);
-  }
-
-  .note p {
-    margin-top: var(--s-3);
-    color: var(--muted);
-    font-size: var(--text-sm);
-  }
-
-  .note code {
-    font-family: var(--font-mono);
-    font-size: 0.9em;
-    color: var(--bone);
-    overflow-wrap: anywhere;
   }
 
   .older {
